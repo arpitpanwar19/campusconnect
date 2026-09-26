@@ -12,11 +12,11 @@ export const usePendingOrgs = () => useQuery({
 export const useVerifyOrg = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, status }) => {
-      const { data } = await apiClient.put(`/admin/organizations/${id}/verify`, { status });
+    mutationFn: async (orgId) => {
+      const { data } = await apiClient.post(`/admin/organizations/${orgId}/verify`);
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin', 'organizations'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin'] })
   });
 };
 
@@ -67,7 +67,7 @@ export const useDisableEvent = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id) => {
-      const { data } = await apiClient.put(`/admin/events/${id}/disable`);
+      const { data } = await apiClient.post(`/admin/events/${id}/disable`);
       return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin', 'events'] })
