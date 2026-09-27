@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import jwt, JWTError
+from jose import JWTError
+from jwt import PyJWKClient, decode
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_db
@@ -8,6 +9,10 @@ from app.config import settings
 from app.models.user import User
 
 security = HTTPBearer(auto_error=False)
+
+jwks_client = PyJWKClient(
+    f"{settings.SUPABASE_URL}/auth/v1/.well-known/jwks.json"
+)
 
 async def get_optional_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
@@ -17,12 +22,15 @@ async def get_optional_user(
         return None
     try:
         token = credentials.credentials
-        payload = jwt.decode(
-            token, 
-            settings.SUPABASE_JWT_SECRET, 
-            algorithms=["HS256"], 
+        signing_key = jwks_client.get_signing_key_from_jwt(token)
+
+        payload = decode(
+            token,
+            signing_key.key,
+            algorithms=["ES256"],
             options={"verify_aud": False}
         )
+
         user_id = payload.get("sub")
         if not user_id:
             return None

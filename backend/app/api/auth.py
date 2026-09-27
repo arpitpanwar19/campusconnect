@@ -13,23 +13,27 @@ router = APIRouter()
 async def signup(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     stmt = select(User).where(User.email == user_data.email)
     result = await db.execute(stmt)
-    if result.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="User already exists")
-        
+    existing_user = result.scalar_one_or_none()
+
+    if existing_user:
+        return existing_user
+
     try:
         user_uuid = uuid.UUID(user_data.id)
-    except ValueError:
+    except (ValueError, TypeError):
         user_uuid = uuid.uuid4()
-        
+
     new_user = User(
         id=user_uuid,
         email=user_data.email,
         full_name=user_data.full_name,
-        role='student'
+        role="student"
     )
+
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)
+
     return new_user
 
 @router.post("/onboarding", response_model=UserProfile)

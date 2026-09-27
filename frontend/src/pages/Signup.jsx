@@ -47,14 +47,18 @@ export const Signup = () => {
 
       // Sync user to our backend
       await apiClient.post('/auth/signup', {
-        email,
+        id: data.user.id,
+        email: data.user.email,
         full_name: fullName,
       });
 
-      const res = await apiClient.get('/auth/me');
-      setUser(res.data);
-
-      navigate('/onboarding');
+      if (data.session) {
+        const res = await apiClient.get('/auth/me');
+        setUser(res.data);
+        navigate('/onboarding');
+      } else {
+        setError('Account created. Please check your email to confirm your account, then sign in.');
+      }
     } catch (err) {
       setError(err.message || 'Failed to create account');
     } finally {

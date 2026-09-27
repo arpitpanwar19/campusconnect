@@ -29,6 +29,12 @@ export const Login = () => {
 
       setSession(data.session);
 
+      await apiClient.post('/auth/signup', {
+        id: data.user.id,
+        email: data.user.email,
+        full_name: data.user.user_metadata?.full_name || '',
+      });
+
       const res = await apiClient.get('/auth/me');
       setUser(res.data);
 
