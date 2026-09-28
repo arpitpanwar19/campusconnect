@@ -8,6 +8,7 @@ import { Input } from '../components/common/Input';
 import { Textarea } from '../components/common/Textarea';
 import { Select } from '../components/common/Select';
 import { AlertCircle, Sparkles, X, Check } from 'lucide-react';
+import { ImageUpload } from '../components/common/ImageUpload';
 
 const CATEGORIES = [
   { value: 'workshop', label: 'Workshop' },
@@ -221,10 +222,20 @@ export const CreateEvent = () => {
         <Textarea label="Benefits" value={formData.benefits} onChange={e => update('benefits', e.target.value)} rows={2} placeholder="e.g. Certificate · Workshop materials · Networking" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input label="Poster URL" value={formData.poster_url} onChange={e => update('poster_url', e.target.value)} placeholder="https://..." />
-          <Input label="External registration link" value={formData.registration_link} onChange={e => update('registration_link', e.target.value)} placeholder="https://forms.google.com/..." />
-        </div>
+          <ImageUpload
+            label="Event Poster / Banner"
+            value={formData.poster_url}
+            onChange={(url) => update('poster_url', url)}
+            placeholder="Drag & drop your event poster here, or click to browse"
+          />
 
+          <Input
+            label="External registration link"
+            value={formData.registration_link}
+            onChange={e => update('registration_link', e.target.value)}
+            placeholder="https://forms.google.com/..."
+          />
+        </div>
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
