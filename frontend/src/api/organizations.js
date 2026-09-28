@@ -4,7 +4,7 @@ import { apiClient } from '../lib/api-client';
 export const useOrganizations = () => useQuery({
   queryKey: ['organizations'],
   queryFn: async () => {
-    const { data } = await apiClient.get('/organizations');
+    const { data } = await apiClient.get('/organizations/');
     return data;
   }
 });
